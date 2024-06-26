@@ -3,6 +3,7 @@ data.json
 
 # simple-portfolio
 secretconfig.py
+app.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
