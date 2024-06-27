@@ -83,6 +83,7 @@ async def asset_detail(request: Request, symbol: str):
     data = cursor.execute("""
         SELECT
             timestamp,
+            position,
             position * last_price AS market_value
         FROM snapshots
         WHERE asset_id = (
