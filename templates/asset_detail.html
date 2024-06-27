@@ -1,56 +1,93 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Portfolio</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
 
-{% block content %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type='text/javascript'>
+        google.charts.load('current', { 'packages': ['annotationchart'] });
+        google.charts.setOnLoadCallback(drawChart);
 
-<a href="/">
-    <button class="ui button">Home</button>
-</a>
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('date', 'Date');
+            data.addColumn('number', 'Market Value');
+            data.addRows([
+                {% for d in data %}
+                    [new Date('{{d.timestamp}}'), {{ d.market_value }}],
+                {% endfor %}
+           
+        ]);
 
-<a href="https://www.google.com/finance/quote/{{asset.symbol}}:IST" target="_blank">
-    <button class="ui button">Open in Google Finance</button>
-</a>
+        var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
 
-<!-- TradingView Widget BEGIN -->
-<div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget"></div>
-    <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-    {
-    "width": "980",
-    "height": "610",
-    "symbol": "BIST:{{asset.symbol}}",
-    "interval": "D",
-    "timezone": "Etc/UTC",
-    "theme": "dark",
-    "style": "1",
-    "locale": "en",
-    "allow_symbol_change": true,
-    "calendar": false,
-    "support_host": "https://www.tradingview.com"
-  }
+        var options = {
+            displayAnnotations: true
+        };
+
+        chart.draw(data, options);
+      }
     </script>
-</div>
-  <!-- TradingView Widget END -->
-<h1>Snapshot History</h1>
-<table class="ui selectable striped celled table">
-    <tr>
-        <th>Position</th>
-        <th>Average Price</th>
-        <th>Last Price</th>
-        <th>Market Value</th>
-        <th>Timestamp</th>
-    </tr>
-
-    {% for snapshot in snapshots %}
-    <tr>
-        <td>{{snapshot.position}}</td>
-        <td>{{ "%.2f" % snapshot.average_price }}</td>
-        <td>{{ "%.2f" % snapshot.last_price }}</td>
-        <td>{{ "%.2f" % snapshot.market_value }}</td>
-        <td>{{snapshot.timestamp}}</td>
-    </tr>
-    {% endfor %}
-</table>
-
-
-{% endblock %}
+</head>
+<body>
+    <div class="ui container">
+        <a href="/">
+            <button class="ui button">Home</button>
+        </a>
+        
+        <a href="https://www.google.com/finance/quote/{{asset.symbol}}:IST" target="_blank">
+            <button class="ui button">Open in Google Finance</button>
+        </a>
+        
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+            {
+            "width": "980",
+            "height": "610",
+            "symbol": "BIST:{{asset.symbol}}",
+            "interval": "D",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "allow_symbol_change": true,
+            "calendar": false,
+            "support_host": "https://www.tradingview.com"
+          }
+            </script>
+        </div>
+          <!-- TradingView Widget END -->
+        <h1>Market Value</h1>
+        <div id='chart_div' style='width: 100%; height: 600px;'></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+    </div>
+</body>
+</html>

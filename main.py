@@ -66,18 +66,28 @@ async def asset_detail(request: Request, symbol: str):
     connection = sqlite3.connect("./app.db")
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
-    snapshots = cursor.execute("""
+    # snapshots = cursor.execute("""
+    #     SELECT
+    #         position,
+    #         average_price,
+    #         last_price,
+    #         position * last_price AS market_value,
+    #         timestamp
+    #     FROM snapshots
+    #     WHERE asset_id = (
+    #         SELECT id FROM assets WHERE symbol = ?
+    #     )
+    #     ORDER BY id DESC
+    # """, (symbol,)).fetchall()
+
+    data = cursor.execute("""
         SELECT
-            position,
-            average_price,
-            last_price,
-            position * last_price AS market_value,
-            timestamp
+            timestamp,
+            position * last_price AS market_value
         FROM snapshots
         WHERE asset_id = (
             SELECT id FROM assets WHERE symbol = ?
         )
-        ORDER BY id DESC
     """, (symbol,)).fetchall()
 
-    return templates.TemplateResponse("asset_detail.html", {"request": request, "asset": asset, "snapshots": snapshots})
+    return templates.TemplateResponse("asset_detail.html", {"request": request, "asset": asset, "data": data})
