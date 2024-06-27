@@ -34,41 +34,7 @@
 <body>
     <div class="ui container">
         <h1>Total Market Value</h1>
-        <div id='chart_div' style='width: 100%; height: 600px;'></div>
-
-        <h1>Asset List</h1>
-        <table class="ui selectable striped celled table">
-            <tr>    
-                <th>Symbol</th>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Average Price</th>
-                <th>Last Price</th>
-                <th>Market Value</th>
-            </tr>
-
-            <tr>
-                <td>Total</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>{{ "%.2f" % total }}</td>
-            </tr>
-
-            {% for asset in assets %}
-            
-            <tr>
-                <td>{{asset.symbol}}</td>
-                <td>{{asset.name}}</td>
-                <td>{{asset.position}}</td>
-                <td>{{ "%.2f" % asset.average_price }}</td>
-                <td>{{ "%.2f" % asset.last_price }}</td>
-                <td>{{ "%.2f" % asset.market_value }}</td>
-                <td><a href="/asset/{{asset.symbol}}"><button class="ui button">Details</button></a></td>
-            </tr>
-            {% endfor %}
-        </table>
+    <div id='chart_div' style='width: 100%; height: 600px;'></div>
     </div>
 </body>
 </html>

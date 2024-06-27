@@ -4,6 +4,7 @@ data.json
 # simple-portfolio
 secretconfig.py
 app.db
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

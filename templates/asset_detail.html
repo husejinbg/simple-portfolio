@@ -3,7 +3,7 @@
 {% block content %}
 
 <a href="/">
-    <button class="ui button">Back to Asset List</button>
+    <button class="ui button">Home</button>
 </a>
 
 <a href="https://www.google.com/finance/quote/{{asset.symbol}}:IST" target="_blank">
@@ -31,5 +31,26 @@
     </script>
 </div>
   <!-- TradingView Widget END -->
+<h1>Snapshot History</h1>
+<table class="ui selectable striped celled table">
+    <tr>
+        <th>Position</th>
+        <th>Average Price</th>
+        <th>Last Price</th>
+        <th>Market Value</th>
+        <th>Timestamp</th>
+    </tr>
+
+    {% for snapshot in snapshots %}
+    <tr>
+        <td>{{snapshot.position}}</td>
+        <td>{{ "%.2f" % snapshot.average_price }}</td>
+        <td>{{ "%.2f" % snapshot.last_price }}</td>
+        <td>{{ "%.2f" % snapshot.market_value }}</td>
+        <td>{{snapshot.timestamp}}</td>
+    </tr>
+    {% endfor %}
+</table>
+
 
 {% endblock %}
