@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
 from fastapi.templating import Jinja2Templates
 import sqlite3
 import algolab
 import secretconfig
 import pandas as pd
+import db
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -92,3 +93,8 @@ async def asset_detail(request: Request, symbol: str):
     """, (symbol,)).fetchall()
 
     return templates.TemplateResponse("asset_detail.html", {"request": request, "asset": asset, "data": data})
+
+@app.post("/take_snapshot")
+async def take_snapshot():
+    db.take_snapshot()
+    return {"result": "snapshot taken successfully"}

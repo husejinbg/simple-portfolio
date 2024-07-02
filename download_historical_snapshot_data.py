@@ -5,7 +5,7 @@ import config
 
 symbols = ["HALKB.IS", "KCHOL.IS", "SKBNK.IS", "ZOREN.IS"]
 start_date = "2024-06-01"
-end_date = None
+end_date = "2024-07-02"
 
 def get_asset_id(symbol: str, name: str = None, exchange: str = None):
     if name is None:
