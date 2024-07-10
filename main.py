@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, status
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import sqlite3
 import algolab
@@ -7,6 +8,9 @@ import pandas as pd
 import db
 
 app = FastAPI()
+
+app.mount("/data", StaticFiles(directory="data"), name="data")
+
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/test")
