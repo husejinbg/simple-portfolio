@@ -1,0 +1,335 @@
+
+<html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Stock Order Widget - {{ asset_symbol }}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .widget {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 340px;
+      }
+      .tabs {
+        display: flex;
+        background-color: #4CAF50; /* Default green color for buy */
+        transition: background-color 0.3s;
+      }
+      .tab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        color: #ffffff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .tab.active {
+        background-color: #45a049; /* Darker green for active tab */
+      }
+      .content {
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50; /* Default green color for buy */
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-weight: bold;
+      }
+      button:hover {
+        background-color: #45a049; /* Darker green for hover */
+      }
+      .toggle-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .toggle-label {
+        font-weight: bold;
+      }
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+      }
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+      }
+      input:checked + .slider {
+        background-color: #4CAF50; /* Green for buy */
+      }
+      input:checked + .slider:before {
+        transform: translateX(26px);
+      }
+      .radio-group {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+      }
+      .radio-group label {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 4px;
+        transition: all 0.3s;
+      }
+      .radio-group input[type="radio"] {
+        display: none;
+      }
+      .radio-group label[for="buy"] {
+        background-color: #e6f7e6;
+        color: #4CAF50;
+        border: 2px solid #4CAF50;
+      }
+      .radio-group label[for="sell"] {
+        background-color: #ffe6e6;
+        color: #f44336;
+        border: 2px solid #f44336;
+      }
+      .radio-group input[type="radio"]:checked + label[for="buy"] {
+        background-color: #4CAF50;
+        color: white;
+      }
+      .radio-group input[type="radio"]:checked + label[for="sell"] {
+        background-color: #f44336;
+        color: white;
+      }
+      /* Sell colors */
+      .widget.sell .tabs {
+        background-color: #f44336; /* Red color for sell */
+      }
+      .widget.sell .tab.active {
+        background-color: #d32f2f; /* Darker red for active tab */
+      }
+      .widget.sell button {
+        background-color: #f44336; /* Red color for sell */
+      }
+      .widget.sell button:hover {
+        background-color: #d32f2f; /* Darker red for hover */
+      }
+      .widget.sell input:checked + .slider {
+        background-color: #f44336; /* Red for sell */
+      }
+      .stock-info {
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 10px;
+        margin-bottom: 15px;
+        font-size: 14px;
+      }
+      .stock-info p {
+        margin: 5px 0;
+      }
+    </style>
+    </head>
+    <body>
+      <div class="widget" id="orderWidget">
+        <div class="tabs">
+          <div class="tab active" data-tab="market">Market</div>
+          <div class="tab" data-tab="limit">Limit</div>
+          <div class="tab" data-tab="limit-market">Limit from Market</div>
+        </div>
+        <div class="content">
+          <div class="stock-info">
+            <p><strong>Symbol:</strong> {{ asset_symbol }}</p>
+            <p><strong>Current Price:</strong> ${{ current_price }}</p>
+          </div>
+          <form id="orderForm">
+            <div class="radio-group">
+              <input type="radio" id="buy" name="orderType" value="buy" checked>
+              <label for="buy">BUY</label>
+              <input type="radio" id="sell" name="orderType" value="sell">
+              <label for="sell">SELL</label>
+            </div>
+            <div class="toggle-group">
+              <span class="toggle-label">Quantity / Total Price</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="quantityTotalToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="form-group" id="quantityGroup">
+              <label for="quantity">Quantity:</label>
+              <input type="number" id="quantity" min="1" step="1">
+            </div>
+            <div class="form-group" id="totalPriceGroup" style="display: none;">
+              <label for="totalPrice">Total Price:</label>
+              <input type="number" id="totalPrice" min="0" step="0.01">
+            </div>
+            <div class="form-group" id="priceGroup" style="display: none;">
+              <label for="price">Price per Share:</label>
+              <input type="number" id="price" step="0.01" min="0">
+            </div>
+            <div class="form-group" id="offsetGroup" style="display: none;">
+              <label for="offset">Offset from Market Price:</label>
+              <input type="number" id="offset" step="0.01">
+            </div>
+            <button type="submit">Send Order</button>
+          </form>
+        </div>
+      </div>
+    
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script>
+        $(document).ready(function() {
+          const symbol = '{{ asset_symbol }}';
+          const currentPrice = {{ current_price }};
+    
+          $('.tab').click(function() {
+            $('.tab').removeClass('active');
+            $(this).addClass('active');
+            const tab = $(this).data('tab');
+            
+            $('#priceGroup, #offsetGroup').hide();
+            
+            if (tab === 'limit') {
+              $('#priceGroup').show();
+            } else if (tab === 'limit-market') {
+              $('#offsetGroup').show();
+            }
+          });
+    
+          $('#quantityTotalToggle').change(function() {
+            if ($(this).is(':checked')) {
+              $('#quantityGroup').hide();
+              $('#totalPriceGroup').show();
+            } else {
+              $('#quantityGroup').show();
+              $('#totalPriceGroup').hide();
+            }
+          });
+    
+          $('input[name="orderType"]').change(function() {
+            if ($(this).val() === 'buy') {
+              $('#orderWidget').removeClass('sell');
+            } else {
+              $('#orderWidget').addClass('sell');
+            }
+          });
+    
+          $('#orderForm').submit(function(e) {
+            e.preventDefault();
+            
+            const activeTab = $('.tab.active').data('tab');
+            const isTotal = $('#quantityTotalToggle').is(':checked');
+            const quantity = isTotal ? null : $('#quantity').val();
+            const totalPrice = isTotal ? $('#totalPrice').val() : null;
+            const price = $('#price').val();
+            const offset = $('#offset').val();
+            const action = $('input[name="orderType"]:checked').val();
+    
+            let orderType, orderDetails;
+    
+            // switch (activeTab) {
+            //   case 'market':
+            //     orderType = 'Market Order';
+            //     orderDetails = { symbol, quantity, totalPrice };
+            //     break;
+            //   case 'limit':
+            //     orderType = 'Limit Order';
+            //     orderDetails = { symbol, quantity, totalPrice, price };
+            //     break;
+            //   case 'limit-market':
+            //     orderType = 'Limit from Market Order';
+            //     orderDetails = { symbol, quantity, totalPrice, offset };
+            //     break;
+            // }
+
+            orderType = activeTab;
+            orderDetails = {orderType, symbol, quantity, totalPrice, price, offset, currentPrice};
+    
+            orderDetails.action = action;
+    
+            // Here you would typically send the order to your broker's API
+            $.ajax({
+                url: '/order',
+                method: 'POST',
+                data: JSON.stringify(orderDetails),
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log('Order placed successfully:', response);
+                    alert('Order placed successfully!');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error placing order:', error);
+                    console.error('Status:', status);
+                    console.error('Response:', xhr.responseText);
+                    alert('Error placing order. Please try again.');
+                }
+            });
+            console.log(`Placing ${action.toUpperCase()} ${orderType}:`, orderDetails);
+            alert(`Order placed successfully!\n${action.toUpperCase()} ${orderType} for ${symbol}\n${isTotal ? `Total Price: $${totalPrice}` : `Quantity: ${quantity} shares`}`);
+    
+            // Reset form
+            $('#orderForm')[0].reset();
+            $('.tab:first').click();
+            $('#quantityTotalToggle').prop('checked', false).trigger('change');
+            $('#buy').prop('checked', true).trigger('change');
+          });
+        });
+      </script>
+    </body>
+    </html>

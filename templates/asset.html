@@ -1,0 +1,669 @@
+
+<html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Stock Trading Dashboard - {{asset_symbol}}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .top-section {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+      .widget, .panel {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .widget {
+        width: 300px;
+      }
+      #tradingview-widget-container {
+        width: 600px;
+      }
+      .panel {
+        flex-grow: 1;
+      }
+      .tabs, .subtabs {
+        display: flex;
+        background-color: #4CAF50;
+        transition: background-color 0.3s;
+      }
+      .tab, .subtab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        color: #ffffff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .tab.active, .subtab.active {
+        background-color: #45a049;
+      }
+      .content {
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-weight: bold;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .toggle-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .toggle-label {
+        font-weight: bold;
+      }
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+      }
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+      }
+      input:checked + .slider {
+        background-color: #4CAF50;
+      }
+      input:checked + .slider:before {
+        transform: translateX(26px);
+      }
+      .radio-group {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+      }
+      .radio-group label {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 4px;
+        transition: all 0.3s;
+      }
+      .radio-group input[type="radio"] {
+        display: none;
+      }
+      .radio-group label[for="buy"] {
+        background-color: #e6f7e6;
+        color: #4CAF50;
+        border: 2px solid #4CAF50;
+      }
+      .radio-group label[for="sell"] {
+        background-color: #ffe6e6;
+        color: #f44336;
+        border: 2px solid #f44336;
+      }
+      .radio-group input[type="radio"]:checked + label[for="buy"] {
+        background-color: #4CAF50;
+        color: white;
+      }
+      .radio-group input[type="radio"]:checked + label[for="sell"] {
+        background-color: #f44336;
+        color: white;
+      }
+      .widget.sell .tabs {
+        background-color: #f44336;
+      }
+      .widget.sell .tab.active {
+        background-color: #d32f2f;
+      }
+      .widget.sell button {
+        background-color: #f44336;
+      }
+      .widget.sell button:hover {
+        background-color: #d32f2f;
+      }
+      .widget.sell input:checked + .slider {
+        background-color: #f44336;
+      }
+      .stock-info {
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 10px;
+        margin-bottom: 15px;
+        font-size: 14px;
+      }
+      .stock-info p {
+        margin: 5px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      .cancel-btn {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .cancel-btn:hover {
+        background-color: #d32f2f;
+      }
+    </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="top-section">
+          <div id="tradingview-widget-container">
+            <!-- TradingView Widget will be inserted here -->
+          </div>
+          <div class="widget" id="orderWidget">
+            <div class="tabs">
+              <div class="tab active" data-tab="market">Market</div>
+              <div class="tab" data-tab="limit">Limit</div>
+              <div class="tab" data-tab="limit-market">Limit from Market</div>
+            </div>
+            <div class="content">
+              <div class="stock-info">
+                <p><strong>Symbol:</strong> {{asset_symbol}}</p>
+                <p><strong>Current Price:</strong> ${{ current_price }}</p>
+              </div>
+              <form id="orderForm">
+                <div class="radio-group">
+                  <input type="radio" id="buy" name="orderType" value="buy" checked>
+                  <label for="buy">BUY</label>
+                  <input type="radio" id="sell" name="orderType" value="sell">
+                  <label for="sell">SELL</label>
+                </div>
+                <div class="toggle-group">
+                  <span class="toggle-label">Quantity / Total Price</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="quantityTotalToggle">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="form-group" id="quantityGroup">
+                  <label for="quantity">Quantity:</label>
+                  <input type="number" id="quantity" min="1" step="1">
+                </div>
+                <div class="form-group" id="totalPriceGroup" style="display: none;">
+                  <label for="totalPrice">Total Price:</label>
+                  <input type="number" id="totalPrice" min="0" step="0.01">
+                </div>
+                <div class="form-group" id="priceGroup" style="display: none;">
+                  <label for="price">Price per Share:</label>
+                  <input type="number" id="price" step="0.01" min="0">
+                </div>
+                <div class="form-group" id="offsetGroup" style="display: none;">
+                  <label for="offset">Offset from Market Price:</label>
+                  <input type="number" id="offset" step="0.01">
+                </div>
+                <button type="submit">Send Order</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="panel" id="bottomPanel">
+          <div class="tabs">
+            <div class="tab active" data-tab="positions">Positions</div>
+            <div class="tab" data-tab="orders">Orders</div>
+          </div>
+          <div class="content">
+            <div id="positionsContent">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Symbol</th>
+                    <th>Quantity</th>
+                    <th>Average Price</th>
+                    <th>Current Price</th>
+                    <th>Market Value</th>
+                    <th>P/L</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- <tr>
+                    <td>{{asset_symbol}}</td>
+                    <td>100</td>
+                    <td>$9.50</td>
+                    <td>${{ current_price }}</td>
+                    <td>$1,039.00</td>
+                    <td>+$89.00</td>
+                  </tr>
+                  <tr>
+                    <td>GOOGL</td>
+                    <td>50</td>
+                    <td>$120.75</td>
+                    <td>$122.50</td>
+                    <td>$6,125.00</td>
+                    <td>+$87.50</td>
+                  </tr> -->
+
+                  <!-- <tr>
+                    <td>TRY</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>{{cash}}</td>
+                    <td>-</td>
+                  </tr> -->
+
+                  {% for position in positions %}
+                    <tr>
+                        <td>{{position.symbol}}</td>
+                        <td>{{position.quantity}}</td>
+                        <td>{{position.average_price}}</td>
+                        <td>{{position.current_price}}</td>
+                        <td>{{position.market_value}}</td>
+                        <td>{{position.pl}}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div id="ordersContent" style="display: none;">
+              <div class="subtabs">
+                <div class="subtab active" data-subtab="all">All</div>
+                <div class="subtab" data-subtab="active">Active</div>
+                <div class="subtab" data-subtab="inactive">Inactive</div>
+              </div>
+              <div id="allOrders">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Symbol</th>
+                      <th>Type</th>
+                      <th>Side</th>
+                      <th>Order Size</th>
+                        <th>Remaining Size</th>
+                      <th>Order Price</th>
+                      <th>Total</th>
+                        <th>Timestamp</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- <tr>
+                      <td>001</td>
+                      <td>AAPL</td>
+                      <td>Limit</td>
+                      <td>Buy</td>
+                      <td>50</td>
+                      <td>$10.25</td>
+                      <td>$512.50</td>
+                      <td>Active</td>
+                    </tr>
+                    <tr>
+                      <td>002</td>
+                      <td>GOOGL</td>
+                      <td>Market</td>
+                      <td>Sell</td>
+                      <td>25</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>Executed</td>
+                    </tr> -->
+                    {% for order in orders %}
+                    <tr>
+                      <td>{{order.id}}</td>
+                      <td>{{order.symbol}}</td>
+                      <td>{{order.type}}</td>
+                      <td>{{order.side}}</td>
+                      <td>{{order.order_size}}</td>
+                      <td>{{order.remaining_size}}</td>
+                      <td>{{order.order_price if order.order_price else '-'}}</td>
+                      <td>{{order.total if order.total else '-'}}</td>
+                      <td>{{order.timestamp}}</td>
+                      <td>{{order.status}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div id="activeOrders" style="display: none;">
+                <table>
+                  <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Symbol</th>
+                        <th>Type</th>
+                        <th>Side</th>
+                        <th>Order Size</th>
+                            <th>Remaining Size</th>
+                        <th>Order Price</th>
+                        <th>Total</th>
+                            <th>Timestamp</th>
+                            <th>Status</th>
+                        <th>Action</th>
+                        
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- <tr>
+                      <td>001</td>
+                      <td>AAPL</td>
+                      <td>Limit</td>
+                      <td>Buy</td>
+                      <td>50</td>
+                      <td>$10.25</td>
+                      <td>$512.50</td>
+                      <td><button class="cancel-btn" data-order-id="001">Cancel</button></td>
+                    </tr> -->
+                    {% for order in orders %}
+
+                    {% if order.remaining_size > 0 %}
+                    <tr>
+                      <td>{{order.id}}</td>
+                        <td>{{order.symbol}}</td>
+                        <td>{{order.type}}</td>
+                        <td>{{order.side}}</td>
+                        <td>{{order.order_size}}</td>
+                        <td>{{order.remaining_size}}</td>
+                        <td>{{order.order_price if order.order_price else '-'}}</td>
+                        <td>{{order.total if order.total else '-'}}</td>
+                        <td>{{order.timestamp}}</td>
+                        <td>{{order.status}}</td>
+                        <td><button class="cancel-btn" data-order-id="{{order.id}}">Cancel</button></td>
+                    </tr>
+                    {% endif %}
+
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div id="inactiveOrders" style="display: none;">
+                <table>
+                  <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Symbol</th>
+                        <th>Type</th>
+                        <th>Side</th>
+                        <th>Order Size</th>
+                          <th>Remaining Size</th>
+                        <th>Order Price</th>
+                        <th>Total</th>
+                          <th>Timestamp</th>
+                        <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- <tr>
+                      <td>002</td>
+                      <td>GOOGL</td>
+                      <td>Market</td>
+                      <td>Sell</td>
+                      <td>25</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>Executed</td>
+                    </tr> -->
+
+                    {% for order in orders %}
+
+                    {% if order.remaining_size == 0 %}
+                    <tr>
+                        <td>{{order.id}}</td>
+                        <td>{{order.symbol}}</td>
+                        <td>{{order.type}}</td>
+                        <td>{{order.side}}</td>
+                        <td>{{order.order_size}}</td>
+                        <td>{{order.remaining_size}}</td>
+                        <td>{{order.order_price if order.order_price else '-'}}</td>
+                        <td>{{order.total if order.total else '-'}}</td>
+                        <td>{{order.timestamp}}</td>
+                        <td>{{order.status}}</td>
+                    </tr>
+                    {% endif %}
+
+                    {% endfor %}
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://s3.tradingview.com/tv.js"></script>
+      <script>
+        $(document).ready(function() {
+          const symbol = '{{asset_symbol}}';
+          const currentPrice = {{ current_price }};
+    
+          // Initialize TradingView Widget
+          new TradingView.widget({
+            "width": 600,
+            "height": 400,
+            "symbol": "{{exchange}}:{{asset_symbol}}",
+            "interval": "D",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": false,
+            "hide_volume": true,
+            "container_id": "tradingview-widget-container"
+          });
+    
+          $('.tab').click(function() {
+            const parentId = $(this).closest('.widget, .panel').attr('id');
+            $(`#${parentId} .tab`).removeClass('active');
+            $(this).addClass('active');
+            const tab = $(this).data('tab');
+            
+            if (parentId === 'orderWidget') {
+              $('#priceGroup, #offsetGroup').hide();
+              
+              if (tab === 'limit') {
+                $('#priceGroup').show();
+              } else if (tab === 'limit-market') {
+                $('#offsetGroup').show();
+              }
+            } else if (parentId === 'bottomPanel') {
+              $('#positionsContent, #ordersContent').hide();
+              $(`#${tab}Content`).show();
+            }
+          });
+    
+          $('.subtab').click(function() {
+            $('.subtab').removeClass('active');
+            $(this).addClass('active');
+            const subtab = $(this).data('subtab');
+            
+            $('#allOrders, #activeOrders, #inactiveOrders').hide();
+            $(`#${subtab}Orders`).show();
+          });
+    
+          $('#quantityTotalToggle').change(function() {
+            if ($(this).is(':checked')) {
+              $('#quantityGroup').hide();
+              $('#totalPriceGroup').show();
+            } else {
+              $('#quantityGroup').show();
+              $('#totalPriceGroup').hide();
+            }
+          });
+    
+          $('input[name="orderType"]').change(function() {
+            if ($(this).val() === 'buy') {
+              $('#orderWidget').removeClass('sell');
+            } else {
+              $('#orderWidget').addClass('sell');
+            }
+          });
+    
+          $('#orderForm').submit(function(e) {
+            e.preventDefault();
+            
+            const activeTab = $('.tab.active').data('tab');
+            const isTotal = $('#quantityTotalToggle').is(':checked');
+            const quantity = isTotal ? null : $('#quantity').val();
+            const totalPrice = isTotal ? $('#totalPrice').val() : null;
+            const price = $('#price').val();
+            const offset = $('#offset').val();
+            const action = $('input[name="orderType"]:checked').val();
+    
+            let orderType, orderDetails;
+    
+            // switch (activeTab) {
+            //   case 'market':
+            //     orderType = 'Market Order';
+            //     orderDetails = { symbol, quantity, totalPrice };
+            //     break;
+            //   case 'limit':
+            //     orderType = 'Limit Order';
+            //     orderDetails = { symbol, quantity, totalPrice, price };
+            //     break;
+            //   case 'limit-market':
+            //     orderType = 'Limit from Market Order';
+            //     orderDetails = { symbol, quantity, totalPrice, offset };
+            //     break;
+            // }
+    
+            orderType = activeTab;
+            orderDetails = {orderType, symbol, quantity, totalPrice, price, offset, currentPrice};
+    
+            orderDetails.action = action;
+    
+            // Here you would typically send the order to your broker's API
+            $.ajax({
+                url: '/order',
+                method: 'POST',
+                data: JSON.stringify(orderDetails),
+                contentType: 'application/json',
+                success: function(response) {
+                    // console.log('Order placed successfully:', response);
+                    // alert('Order placed successfully!');
+                },
+                error: function(xhr, status, error) {
+                    // console.error('Error placing order:', error);
+                    // console.error('Status:', status);
+                    // console.error('Response:', xhr.responseText);a
+                    // alert('Error placing order. Please try again.');
+                }
+            });
+    
+            // Here you would typically send the order to your broker's API
+            // console.log(`Placing ${action.toUpperCase()} ${orderType}:`, orderDetails);
+            // alert(`Order placed successfully!\n${action.toUpperCase()} ${orderType} for ${symbol}\n${isTotal ? `Total Price: $${totalPrice}` : `Quantity: ${quantity} shares`}`);
+    
+            // Reset form
+            $('#orderForm')[0].reset();
+            $('.tab:first').click();
+            $('#quantityTotalToggle').prop('checked', false).trigger('change');
+            $('#buy').prop('checked', true).trigger('change');
+          });
+    
+          $('#activeOrders').on('click', '.cancel-btn', function() {
+            const orderId = $(this).data('order-id');
+            
+            // Here you would typically send a cancel request to your broker's API
+            $.ajax({
+                url: '/cancel_order',
+                method: 'POST',
+                data: JSON.stringify({ order_id: orderId }),
+                contentType: 'application/json',
+                success: function(response) {
+                    // console.log('Order canceled successfully:', response);
+                    // alert('Order canceled successfully!');
+                },
+                error: function(xhr, status, error) {
+                    // console.error('Error canceling order:', error);
+                    // console.error('Status:', status);
+                    // console.error('Response:', xhr.responseText);
+                    // alert('Error canceling order. Please try again.');
+                }
+            });
+
+            // console.log(`Canceling order with ID: ${orderId}`);
+            // alert(`Order ${orderId} canceled successfully!`);
+            
+            // Remove the canceled order from the table
+            $(this).closest('tr').remove();
+          });
+        });
+      </script>
+    </body>
+    </html>

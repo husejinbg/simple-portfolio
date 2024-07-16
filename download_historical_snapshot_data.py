@@ -5,7 +5,7 @@ import config
 
 symbols = ["HALKB.IS", "KCHOL.IS", "SKBNK.IS", "ZOREN.IS"]
 start_date = "2024-06-01"
-end_date = "2024-07-02"
+end_date = None
 
 def get_asset_id(symbol: str, name: str = None, exchange: str = None):
     if name is None:
@@ -28,6 +28,10 @@ def insert_snapshot(symbol, position, average_price, currency, last_price, times
     connection = sqlite3.connect(config.DB_FILE)
     cursor = connection.cursor()
     asset_id = get_asset_id(symbol)
+
+    # if the snapshot for that date already exists, skip
+    if cursor.execute("SELECT * FROM snapshots WHERE asset_id = ? AND timestamp like ?", (asset_id, timestamp[:10] + "%")).fetchone():
+        return
 
     if position == -1:
         position = cursor.execute("SELECT position FROM portfolio WHERE asset_id = ?", (asset_id,)).fetchone()[0]

@@ -1,0 +1,141 @@
+<html><head>
+    <title>Portfolio</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+      }
+      .chart-container {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        max-width: 1000px;
+      }
+      .chart {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+        height: 400px;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 0;
+      }
+      p {
+        color: #666;
+        margin-top: 5px;
+      }
+      table {
+        width: 90%;
+        max-width: 1000px;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+        .details-link {
+          display: inline-block;
+        background-color: #4CAF50;
+        color: white;
+        padding: 8px 12px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+          transition: background-color 0.3s;
+        }
+        .details-link:hover {
+          background-color: #45a049;
+      }
+    </style>
+    </head>
+    <body>
+      <h1>Portfolio Performance Tracker</h1>
+      <p>Comparing TRY and USD values over time</p>
+      <div class="chart-container">
+        <div class="chart">
+          <canvas id="tryChart"></canvas>
+        </div>
+        <div class="chart">
+          <canvas id="usdChart"></canvas>
+        </div>
+      </div>
+      <script>
+        // Sample data (replace with your actual data)
+        const dates = {{ dates|tojson }};
+        const tryValues = {{ try_values|tojson }};
+        const usdValues = {{ usd_values|tojson }};
+    
+        function createChart(canvasId, label, data, color) {
+          const ctx = document.getElementById(canvasId).getContext('2d');
+          return new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: dates,
+              datasets: [{
+                label: label,
+                data: data,
+                borderColor: color,
+                backgroundColor: color + '20',
+                fill: true,
+                tension: 0.1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Date'
+                  }
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Portfolio Value'
+                  },
+                  beginAtZero: true
+                }
+              },
+              plugins: {
+                legend: {
+                  display: true,
+                  position: 'top'
+                },
+                tooltip: {
+                  mode: 'index',
+                  intersect: false,
+                }
+              }
+            }
+          });
+        }
+    
+        createChart('tryChart', 'Portfolio Value (TRY)', tryValues, '#FF6384');
+        createChart('usdChart', 'Portfolio Value (USD)', usdValues, '#36A2EB');
+      </script>
+    </body></html>

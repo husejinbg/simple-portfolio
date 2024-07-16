@@ -41,4 +41,19 @@ cursor.execute("""
     );
 """)
 
+# Create orders table
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS orders (
+        id INTEGER PRIMARY KEY,
+        asset_id INTEGER,
+        type TEXT,
+        side TEXT,
+        quantity REAL,
+        price REAL,
+        timestamp TEXT,
+        status TEXT,
+        FOREIGN KEY(asset_id) REFERENCES assets(id)
+    );
+""")
+
 connection.commit()

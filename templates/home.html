@@ -4,79 +4,18 @@
     <title>Simple Portfolio</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
-
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type='text/javascript'>
-        google.charts.load('current', { 'packages': ['annotationchart'] });
-        google.charts.setOnLoadCallback(drawChart);
-
-        function drawChart() {
-            var data = new google.visualization.DataTable();
-            data.addColumn('date', 'Date');
-            data.addColumn('number', 'Market Value');
-            data.addRows([
-                {% for d in data %}
-                    [new Date('{{d.timestamp}}'), {{ d.market_value }}],
-                {% endfor %}
-           
-        ]);
-
-        var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
-
-        var options = {
-            displayAnnotations: true
-        };
-
-        chart.draw(data, options);
-      }
-    </script>
-
-    <script type="text/javascript">
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(drawChart);
-
-        function drawChart() {
-
-        var data = google.visualization.arrayToDataTable([
-            ['Task', 'Hours per Day'],
-            {% for asset in assets %}
-                ['{{asset.symbol}}', {{asset.market_value}}],
-            {% endfor %}
-        ]);
-
-        var options = {
-            title: 'Portfolio Pie Chart'
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('portfolio_piechart'));
-
-        chart.draw(data, options);
-        }
-    </script>
 </head>
 <body>
     <div class="ui container">
-        <h1>Total Market Value</h1>
-        <div id='chart_div' style='width: 100%; height: 600px;'></div>
+
+        <a href="/portfolio"><button class="ui positive button">Portfolio</button></a></td>
 
         <h1>Asset List</h1>
         <table class="ui selectable striped celled table">
             <tr>    
                 <th>Symbol</th>
                 <th>Name</th>
-                <th>Position</th>
-                <th>Average Price</th>
-                <th>Last Price</th>
-                <th>Market Value</th>
-            </tr>
-
-            <tr>
-                <td>Total</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>{{ "%.2f" % total }}</td>
+                <th>Exchange</th>
             </tr>
 
             {% for asset in assets %}
@@ -84,42 +23,11 @@
             <tr>
                 <td>{{asset.symbol}}</td>
                 <td>{{asset.name}}</td>
-                <td>{{asset.position}}</td>
-                <td>{{ "%.2f" % asset.average_price }}</td>
-                <td>{{ "%.2f" % asset.last_price }}</td>
-                <td>{{ "%.2f" % asset.market_value }}</td>
+                <td>{{asset.exchange}}</td>
                 <td><a href="/asset/{{asset.symbol}}"><button class="ui button">Details</button></a></td>
             </tr>
             {% endfor %}
         </table>
-
-        <h1>Portfolio</h1>
-        <div id='portfolio_piechart' style='width: 100%; height: 600px;'></div>
-
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
-        <div class="ui hidden divider"></div>
     </div>
 </body>
 </html>
