@@ -1,6 +1,5 @@
 fastapi[standard]
 uvicorn
-alpaca-py
 jinja2
 yfinance
 

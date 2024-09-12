@@ -5,6 +5,7 @@ data.json
 secretconfig.py
 app.db
 *.csv
+templates/tmp.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
